@@ -57,7 +57,5 @@ public class UserController {
         if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("birthday:" + user.getBirthday() + " should not be in the future" );
         }
-
     }
-
 }
