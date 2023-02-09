@@ -55,7 +55,7 @@ public class FilmController {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             throw new ValidationException("Please check film's parameters");
         }
-        if (film.getDuration() < 0) {
+        if (film.getDuration() <= 0) {
             throw new ValidationException("Please check film's parameters");
         }
     }
