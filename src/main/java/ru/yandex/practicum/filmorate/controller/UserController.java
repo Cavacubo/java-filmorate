@@ -3,12 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.BadRequestException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,9 +20,9 @@ public class UserController {
     private int currentId = 1;
 
     @GetMapping
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         log.info("Current number of users: {}", users.size());
-        return users.values();
+        return List.copyOf(users.values());
     }
 
     @PostMapping
@@ -36,7 +37,7 @@ public class UserController {
     @PutMapping
     public User update(@RequestBody User user) {
         if (!users.containsKey(user.getId())) {
-           throw new ValidationException("id does not exist: " + user.getId());
+           throw new NotFoundException("id does not exist: " + user.getId());
         }
         validate(user);
         users.put(user.getId(), user);
@@ -49,13 +50,13 @@ public class UserController {
             user.setName(user.getLogin());
         }
         if (user.getEmail() == null || !user.getEmail().contains("@")) {
-            throw new ValidationException("email: " + user.getEmail() + " is incorrect");
+            throw new BadRequestException("email: " + user.getEmail() + " is incorrect");
         }
         if (user.getLogin() == null || user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
-            throw new ValidationException("login: " + user.getLogin() + " is incorrect");
+            throw new BadRequestException("login: " + user.getLogin() + " is incorrect");
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("birthday:" + user.getBirthday() + " should not be in the future" );
+            throw new BadRequestException("birthday:" + user.getBirthday() + " should not be in the future" );
         }
     }
 }

@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.BadRequestException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -41,60 +42,60 @@ class UserControllerTest {
     @Test
     void createShouldThrowExceptionIfUserEmailIsNull() {
         User user = new User(1, null, "user", "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void createShouldThrowExceptionIfUserEmailDoesNotContainAt() {
         User user = new User(1, "email.gmail.com", "user", "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void createShouldThrowExceptionIfUserLoginIsNull() {
         User user = new User(1, "email@gmail.com", null, "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void createShouldThrowExceptionIfUserLoginIsEmpty() {
         User user = new User(1, "email@gmail.com", "", "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void createShouldThrowExceptionIfUserLoginContainsSpacesAtTheBeginning() {
         User user = new User(1, "email@gmail.com", "  user", "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void createShouldThrowExceptionIfUserLoginContainsSpacesAtTheEnd() {
         User user = new User(1, "email@gmail.com", "user ", "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void createShouldThrowExceptionIfUserLoginContainsSpacesInTheMiddle() {
         User user = new User(1, "email@gmail.com", "us  er", "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void createShouldThrowExceptionIfUserLoginContainsOnlySpaces() {
         User user = new User(1, "email@gmail.com", "   ", "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void createShouldThrowExceptionIfUserBirthdayIsInTheFuture() {
         User user = new User(1, "email@gmail.com", "user", "Jane", LocalDate.of(2023, 10, 15));
-        assertThrows(ValidationException.class, () -> userController.create(user));
+        assertThrows(BadRequestException.class, () -> userController.create(user));
     }
 
     @Test
     void updateShouldThrowExceptionIfFilmIdIsNotExist() {
         User user = new User(55, "email@gmail.com", "user", "Jane", LocalDate.of(1990, 12, 10));
-        assertThrows(ValidationException.class, () -> userController.update(user));
+        assertThrows(NotFoundException.class, () -> userController.update(user));
     }
 }

@@ -3,12 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.BadRequestException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,9 +20,9 @@ public class FilmController {
     private int currentId = 1;
 
     @GetMapping
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         log.info("Current number of films: {}", films.size());
-        return films.values();
+        return List.copyOf(films.values());
     }
 
     @PostMapping
@@ -37,7 +38,7 @@ public class FilmController {
     @PutMapping
     public Film update(@RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
-            throw new ValidationException("id does not exist: " + film.getId());
+            throw new NotFoundException("id does not exist: " + film.getId());
         }
         validate(film);
         films.put(film.getId(), film);
@@ -47,16 +48,16 @@ public class FilmController {
 
     private void validate(Film film) {
         if (film.getName() == null || film.getName().isEmpty()) {
-            throw new ValidationException("name: " + film.getName() + " is incorrect");
+            throw new BadRequestException("name: " + film.getName() + " is incorrect");
         }
         if (film.getDescription().length() > 201) {
-            throw new ValidationException("max length of description is 200 characters");
+            throw new BadRequestException("max length of description is 200 characters");
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Please check film's parameters");
+            throw new BadRequestException("Please check film's parameters");
         }
         if (film.getDuration() <= 0) {
-            throw new ValidationException("Please check film's parameters");
+            throw new BadRequestException("Please check film's parameters");
         }
     }
 }
