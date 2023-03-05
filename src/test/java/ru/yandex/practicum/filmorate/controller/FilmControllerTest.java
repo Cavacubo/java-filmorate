@@ -1,18 +1,18 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.BadRequestException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
-@SpringBootTest
 class FilmControllerTest {
-    FilmController filmController = new FilmController();
+    FilmController filmController = new FilmController(mock(FilmService.class));
 
     @Test
     void findAllShouldReturnEmptyMapIfNothingAdded() {
