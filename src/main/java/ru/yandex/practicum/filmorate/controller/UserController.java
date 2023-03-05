@@ -65,6 +65,9 @@ public class UserController {
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable("id") Integer userId, @PathVariable("friendId") Integer friendId) {
+        if (friendId < 0) {
+            throw new IncorrectParameterException("friendId");
+        }
         log.debug("Friend: {} deleted from friends", userService.findUserById(friendId).getName());
         userService.deleteFriend(userId, friendId);
     }
