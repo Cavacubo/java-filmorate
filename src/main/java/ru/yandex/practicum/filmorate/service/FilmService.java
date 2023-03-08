@@ -2,14 +2,11 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.BadRequestException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
@@ -24,17 +21,16 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
-    public Film findFilmById(int filmId) {
-        return filmStorage.getFilmById(filmId);
+    public Film getFilmById(int filmId) {
+        return filmStorage.findFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Film with id: " + filmId + " is not found"));
     }
 
     public Film createFilm(Film film) {
-        validate(film);
         return filmStorage.create(film);
     }
 
     public Film updateFilm(Film film) {
-        validate(film);
         return filmStorage.update(film);
     }
 
@@ -43,36 +39,18 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
-        Film filmToLike = filmStorage.getFilmById(filmId);
+        Film filmToLike = getFilmById(filmId);
         filmToLike.addLike(userId);
         filmStorage.update(filmToLike);
     }
 
     public void deleteLike(int filmId, int userId) {
-        Film film = filmStorage.getFilmById(filmId);
+        Film film = getFilmById(filmId);
         film.deleteLike(userId);
         filmStorage.update(film);
     }
 
     public List<Film> getPopularFilms(int count) {
-        return filmStorage.findAll().stream()
-                .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
-                .limit(count)
-                .collect(Collectors.toList());
-    }
-
-    private void validate(Film film) {
-        if (film.getName() == null || film.getName().isEmpty()) {
-            throw new BadRequestException("name: " + film.getName() + " is incorrect");
-        }
-        if (film.getDescription().length() > 201) {
-            throw new BadRequestException("max length of description is 200 characters");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new BadRequestException("Please check film's parameters");
-        }
-        if (film.getDuration() <= 0) {
-            throw new BadRequestException("Please check film's parameters");
-        }
+        return filmStorage.findPopularFilms(count);
     }
 }

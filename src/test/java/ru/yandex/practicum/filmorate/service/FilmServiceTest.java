@@ -23,12 +23,12 @@ class FilmServiceTest {
     void findFilmByIdHappyPath() {
         Film film1 = new Film(1, "Film1", "Comedy", LocalDate.of(2020, 10, 25), 120);
         filmService.createFilm(film1);
-        assertEquals(1, filmService.findFilmById(1).getId());
+        assertEquals(1, filmService.getFilmById(1).getId());
     }
 
     @Test
     void findFilmByIdShouldThrowExceptionIfFilmIdDoesNotExist() {
-        assertThrows(NotFoundException.class, () -> filmService.findFilmById(9999));
+        assertThrows(NotFoundException.class, () -> filmService.getFilmById(9999));
     }
 
     @Test

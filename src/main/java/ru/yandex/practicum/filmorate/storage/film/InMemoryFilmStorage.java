@@ -4,9 +4,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -18,12 +17,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         return List.copyOf(films.values());
     }
 
-    @Override
-    public Film getFilmById(int id) {
-        if (!films.containsKey(id)) {
-            throw new NotFoundException("Film with id: " + id + " is not found");
-        }
-        return films.get(id);
+    public List<Film> findPopularFilms(int count) {
+        return findAll().stream()
+                .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Film> findFilmById(int id) {
+        return Optional.ofNullable(films.get(id));
     }
 
     @Override

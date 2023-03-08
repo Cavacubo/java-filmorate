@@ -25,13 +25,13 @@ class UserServiceTest {
     void findUserByIdHappyPath() {
         User user = new User(1, "email@gmail.com", "user", "Jane", LocalDate.of(1990, 12, 10));
         userService.createUser(user);
-        assertEquals(1, userService.findUserById(1).getId());
-        assertEquals("Jane", userService.findUserById(1).getName());
+        assertEquals(1, userService.getUserById(1).getId());
+        assertEquals("Jane", userService.getUserById(1).getName());
     }
 
     @Test
     void findUserByIdShouldThrowExceptionIfUserDoesNotExist() {
-        assertThrows(NotFoundException.class, () -> userService.findUserById(5555));
+        assertThrows(NotFoundException.class, () -> userService.getUserById(5555));
     }
 
     @Test
