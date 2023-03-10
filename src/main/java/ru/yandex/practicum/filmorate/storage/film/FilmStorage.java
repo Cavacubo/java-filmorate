@@ -12,6 +12,11 @@ public interface FilmStorage {
     Optional<Film> findFilmById(int id);
     Film create(Film film);
     void delete(Film film);
+
+    /**
+     * @param film must have an id of existing film
+     * @return updated film
+     */
     Film update(Film film);
 
 }

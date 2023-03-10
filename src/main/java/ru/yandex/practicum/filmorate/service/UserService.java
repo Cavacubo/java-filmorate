@@ -32,6 +32,7 @@ public class UserService {
     }
 
     public User updateUser(User user) {
+        getUserById(user.getId()); // ensure that user exists
         return userStorage.update(user);
     }
 

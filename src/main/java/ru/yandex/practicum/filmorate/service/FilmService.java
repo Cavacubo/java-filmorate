@@ -31,6 +31,7 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
+        getFilmById(film.getId()); // ensure that film exists
         return filmStorage.update(film);
     }
 

@@ -10,6 +10,11 @@ public interface UserStorage {
 
     User create(User user);
     void delete(User user);
+
+    /**
+     * @param user must have an id of existing user
+     * @return updated user
+     */
     User update(User user);
     Optional<User> findUserById(int id);
     List<User> findAll();
