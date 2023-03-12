@@ -1,22 +1,35 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.BadRequestException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 class FilmControllerTest {
-    FilmController filmController = new FilmController();
+    FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage()));
 
     @Test
     void findAllShouldReturnEmptyMapIfNothingAdded() {
         assertEquals(0, filmController.findAll().size());
+    }
+
+    @Test
+    void findFilmByIdHappyPath() {
+        Film film1 = new Film(1, "Film1", "Comedy", LocalDate.of(2020, 10, 25), 120);
+        filmController.create(film1);
+        assertEquals(1, filmController.findFilmById(1).getId());
+    }
+
+    @Test
+    void findFilmByIdShouldThrowExceptionIfFilmIdDoesNotExist() {
+        assertThrows(NotFoundException.class, () -> filmController.findFilmById(9999));
     }
 
     @Test
@@ -65,10 +78,40 @@ class FilmControllerTest {
         Film film = new Film(1, "Film", "Comedy", LocalDate.of(2020, 10, 25), -5);
         assertThrows(BadRequestException.class, () -> filmController.create(film));
     }
-    
+
     @Test
     void updateShouldThrowExceptionIfFilmIdIsNotExist() {
         Film film = new Film(50, "Film", "Horror", LocalDate.of(2020, 10, 25), 100);
         assertThrows(NotFoundException.class, () -> filmController.update(film));
+    }
+
+    @Test
+    void addLike() {
+        Film film1 = new Film(1, "Film1", "Comedy", LocalDate.of(2020, 10, 25), 120);
+        filmController.create(film1);
+        filmController.addLike(1, 5);
+        assertEquals(1, film1.getLikes().size());
+    }
+
+    @Test
+    void deleteLike() {
+        Film film1 = new Film(1, "Film1", "Comedy", LocalDate.of(2020, 10, 25), 120);
+        filmController.create(film1);
+        filmController.addLike(1, 5);
+        filmController.deleteLike(1, 5);
+        assertEquals(0, film1.getLikes().size());
+    }
+
+    @Test
+    void getPopularFilms() {
+        Film film1 = new Film(1, "Film1", "Comedy", LocalDate.of(2020, 10, 25), 120);
+        filmController.create(film1);
+        filmController.addLike(1, 5);
+        Film film2 = new Film(2, "Film", "Horror", LocalDate.of(2020, 10, 25), 100);
+        filmController.create(film2);
+        filmController.addLike(2, 1);
+        filmController.addLike(2, 3);
+        filmController.addLike(2, 5);
+        assertEquals(List.of(film2, film1), filmController.findMostPopularFilms(2));
     }
 }
